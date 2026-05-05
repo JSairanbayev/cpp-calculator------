@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include <sstream>
 
 bool ReadNumber(Number& result) {
     if (!(std::cin >> result)) {
@@ -11,40 +12,48 @@ bool ReadNumber(Number& result) {
 }
 
 bool RunCalculatorCycle() {
-    Number accumulator;
-    
-    if (!ReadNumber(accumulator)) {
-        std::cerr << "Error: Numeric operand expected" << std::endl;
-        return false;
-    }
-    
+    Number accumulator = 0;
     Number memory = 0;
     bool has_memory = false;
-    
-    std::string command;
-    while (std::cin >> command) {
-        
-        if (command == "q") {
+    bool first_token = true;
+
+    std::string token;
+    while (std::cin >> token) {
+
+        std::istringstream input_stream(token);
+        Number parsed_number = 0;
+        if (input_stream >> parsed_number && input_stream.eof()) {
+            accumulator = parsed_number;
+            first_token = false;
+            continue;
+        }
+
+        if (first_token) {
+            std::cerr << "Error: Numeric operand expected" << std::endl;
+            return false;
+        }
+
+        if (token == "q") {
             return true;
         }
-        
-        if (command == "=") {
+
+        if (token == "=") {
             std::cout << accumulator << std::endl;
             continue;
         }
-        
-        if (command == "c") {
+
+        if (token == "c") {
             accumulator = 0;
             continue;
         }
-        
-        if (command == "s") {
+
+        if (token == "s") {
             memory = accumulator;
             has_memory = true;
             continue;
         }
-        
-        if (command == "l") {
+
+        if (token == "l") {
             if (!has_memory) {
                 std::cerr << "Error: Memory is empty" << std::endl;
                 return false;
@@ -52,36 +61,36 @@ bool RunCalculatorCycle() {
             accumulator = memory;
             continue;
         }
-        
-        if (command == "+" || command == "-" || command == "*" || 
-            command == "/" || command == "**" || command == ":") {
-            
-            Number operand;
+
+        if (token == "+" || token == "-" || token == "*" ||
+            token == "/" || token == "**" || token == ":") {
+
+            Number operand = 0;
             if (!ReadNumber(operand)) {
                 std::cerr << "Error: Numeric operand expected" << std::endl;
                 return false;
             }
-            
-            if (command == "+") {
+
+            if (token == "+") {
                 accumulator += operand;
-            } else if (command == "-") {
+            } else if (token == "-") {
                 accumulator -= operand;
-            } else if (command == "*") {
+            } else if (token == "*") {
                 accumulator *= operand;
-            } else if (command == "/") {
+            } else if (token == "/") {
                 accumulator /= operand;
-            } else if (command == "**") {
+            } else if (token == "**") {
                 accumulator = std::pow(accumulator, operand);
-            } else if (command == ":") {
+            } else if (token == ":") {
                 accumulator = operand;
             }
-            
+
             continue;
         }
-        
-        std::cerr << "Error: Unknown token " << command << std::endl;
+
+        std::cerr << "Error: Unknown token " << token << std::endl;
         return false;
     }
-    
+
     return true;
 }
