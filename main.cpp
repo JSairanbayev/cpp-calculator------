@@ -3,7 +3,6 @@
 int main() {
     if (RunCalculatorCycle()) {
         return 0;
-    } else {
-        return 1;
     }
+    return 1;
 }
