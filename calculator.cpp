@@ -1,96 +1,49 @@
 #include "calculator.h"
-#include <iostream>
+
 #include <cmath>
 #include <string>
-#include <sstream>
 
-bool ReadNumber(Number& result) {
-    if (!(std::cin >> result)) {
-        return false;
-    }
-    return true;
+void Calculator::Set(Number n) {
+    current_ = n;
 }
 
-bool RunCalculatorCycle() {
-    Number accumulator = 0;
-    Number memory = 0;
-    bool has_memory = false;
-    bool first_token = true;
+Number Calculator::GetNumber() const {
+    return current_;
+}
 
-    std::string token;
-    while (std::cin >> token) {
+void Calculator::Add(Number n) {
+    current_ += n;
+}
 
-        std::istringstream input_stream(token);
-        Number parsed_number = 0;
-        if (input_stream >> parsed_number && input_stream.eof()) {
-            accumulator = parsed_number;
-            first_token = false;
-            continue;
-        }
+void Calculator::Sub(Number n) {
+    current_ -= n;
+}
 
-        if (first_token) {
-            std::cerr << "Error: Numeric operand expected" << std::endl;
-            return false;
-        }
+void Calculator::Div(Number n) {
+    current_ /= n;
+}
 
-        if (token == "q") {
-            return true;
-        }
+void Calculator::Mul(Number n) {
+    current_ *= n;
+}
 
-        if (token == "=") {
-            std::cout << accumulator << std::endl;
-            continue;
-        }
+void Calculator::Pow(Number n) {
+    current_ = std::pow(current_, n);
+}
 
-        if (token == "c") {
-            accumulator = 0;
-            continue;
-        }
+void Calculator::Save() {
+    memory_ = current_;
+    has_memory_ = true;
+}
 
-        if (token == "s") {
-            memory = accumulator;
-            has_memory = true;
-            continue;
-        }
+void Calculator::Load() {
+    current_ = memory_;
+}
 
-        if (token == "l") {
-            if (!has_memory) {
-                std::cerr << "Error: Memory is empty" << std::endl;
-                return false;
-            }
-            accumulator = memory;
-            continue;
-        }
+bool Calculator::HasMem() const {
+    return has_memory_;
+}
 
-        if (token == "+" || token == "-" || token == "*" ||
-            token == "/" || token == "**" || token == ":") {
-
-            Number operand = 0;
-            if (!ReadNumber(operand)) {
-                std::cerr << "Error: Numeric operand expected" << std::endl;
-                return false;
-            }
-
-            if (token == "+") {
-                accumulator += operand;
-            } else if (token == "-") {
-                accumulator -= operand;
-            } else if (token == "*") {
-                accumulator *= operand;
-            } else if (token == "/") {
-                accumulator /= operand;
-            } else if (token == "**") {
-                accumulator = std::pow(accumulator, operand);
-            } else if (token == ":") {
-                accumulator = operand;
-            }
-
-            continue;
-        }
-
-        std::cerr << "Error: Unknown token " << token << std::endl;
-        return false;
-    }
-
-    return true;
+std::string Calculator::GetNumberRepr() const {
+    return std::to_string(current_);
 }
